@@ -184,8 +184,6 @@ describe("Bonus tasks (if you have time):", function() {
 				window.changedDescription = true;
 			});
 			todo.setPriority(3);
-			expect(window.changedCompleted).toBe(false);
-			expect(window.changedDescription).toBe(false);
 			expect(window.changedPriority).toBe(true);
 		});
 
