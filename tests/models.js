@@ -74,7 +74,7 @@ describe("Create a new instance of Todo", function() {
 		expect(window.myFirstTodo).toBeDefined();
 	});
 
-	it("with a 'description' attribute set to 'Buy Jamie and Nick a beer'", function() {
+	it("with a 'description' attribute set to 'Buy Jamie and Nick loads of beers'", function() {
 		expect(window.myFirstTodo.get('description')).toBeDefined();
 		expect(typeof window.myFirstTodo.get('description')).toBe("string");
 		expect(window.myFirstTodo.get('description')).toBe("Buy Jamie and Nick a beer");
@@ -184,6 +184,7 @@ describe("Bonus tasks (if you have time):", function() {
 				window.changedDescription = true;
 			});
 			todo.setPriority(3);
+
 			expect(window.changedPriority).toBe(true);
 		});
 
