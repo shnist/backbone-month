@@ -83,6 +83,9 @@
   transform: rotate(3deg);
 }
 .deck-container .slide code {
+  color: #567;
+}
+.deck-container .slide pre code {
   color: #fff;
   font-size: 90%;
 }
