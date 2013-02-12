@@ -35,5 +35,7 @@ describe("The completedTodos array", function() {
     it("contains at least 1 model", function() {  
         expect(completedTodos.length).toBeGreaterThan(0);
     });
+    it("all models in completedTodos are completed", function() {  
+        expect(completedTodos.length).toBe(myTodoList.where({completed: true}).length);
+    });
 });
-
