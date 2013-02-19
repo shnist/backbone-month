@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=1024, user-scalable=no">
+
+	<title>Lesson 3: Views</title>
+	
+	<!-- Required stylesheet -->
+	<link rel="stylesheet" href="core/deck.core.css">
+	
+	<!-- Extension CSS files go here. Remove or add as needed. -->
+	<link rel="stylesheet" href="extensions/goto/deck.goto.css">
+	<link rel="stylesheet" href="extensions/menu/deck.menu.css">
+	<link rel="stylesheet" href="extensions/navigation/deck.navigation.css">
+	<link rel="stylesheet" href="extensions/status/deck.status.css">
+	<link rel="stylesheet" href="extensions/hash/deck.hash.css">
+	<link rel="stylesheet" href="extensions/scale/deck.scale.css">
+
+	<!-- Style theme. More available in /themes/style/ or create your own. -->
+	<link rel="stylesheet" href="themes/style/web-2.0.css">
+	
+	<!-- Transition theme. More available in /themes/transition/ or create your own. -->
+	<link rel="stylesheet" href="themes/transition/horizontal-slide.css">
+
+	<!-- Required Modernizr file -->
+	<script src="modernizr.custom.js"></script>
+</head>
+<body class="deck-container">
+
+<!-- Begin slides. Just make elements with a class of slide. -->
+
+<section class="slide">
+	<h1><span>Views</span></h1>
+</section>
+
+<section class="slide">
+	<h2><span>Agenda</span></h2>
+	<ul>
+		<li>Introduction to views</h1>
+		<li>Traditional updating</li>
+		<li>Updating with a view</li>
+		<li>Rendering a view</li>
+		<li>DOM association</li>
+		<li>DOM events</li>
+		<li>Nested views</li>
+		<li>Auto-rendering</li>
+		<li>Cleaning up</li>
+	</ul>
+</section>
+
+<section class="slide">
+	<h2><span>Introduction to views</span></h2>
+	<p>Views define how our models and collections are presented.</p>
+	<p>They consist of:</p>
+	<ul>
+		<li>Related to a single DOM element</li>
+		<li>Associated model/collection</li>
+		<li>DOM events</li>
+		<li>Render function</li>
+		<li>Templating (optional)</li>
+	</ul>
+</section>
+
+<section class="slide">
+	<h2><span>Traditional updating</span></h2>
+	<p>Doing something onclick:</p>
+	<pre><code>// bind to a click on the button
+$(&#39;#addButton&#39;).click(function(event) {
+
+	// add a new image container
+	$(&#39;#imageGallery&#39;).append($('&lt;li/&gt;'));
+
+});</code></pre>
+	<p>Update page on Ajax success:</p>
+	<pre><code>$.ajax({
+	url: 'viewImage.php?size=large'
+}).done(function(data) {
+	$('#largeImageViewer').html(data);
+});</code></pre>
+</section>
+
+<section class="slide">
+	<h2><span>Updating with a view</span></h2>
+	<pre><code>var ImageGalleryView = Backbone.View.extend({
+	el: '#imageGallery',
+	events: {
+		'click #addButton': 'addImage',
+		'click .showLargeImage': 'showImage'
+	}
+	addImage: function(e) {
+		// add to collection here
+		// this.collection.add({someKey: 'someValue'});
+	},
+	showImage: function(e) {
+		// get data here
+		// this.collection.get($(e.target).data('image-id'));
+	},
+	render: function() {
+		// manipulate the DOM here
+		// $(this.el).html(this.collection.serialize)
+		return this;
+	}
+});
+
+var myImageGalleryView = new ImageGalleryView({
+	collection: myImageGallery // an existing collection
+});</code></pre>
+</section>
+
+<section class="slide">
+	<h2><span>Rendering a view</span></h2>
+	<p>The <code>render</code> method should do all of your DOM manipulation to render the view.</p>
+	<p>It should always <code>return this;</code>.</p>
+	<p>For example:</p>
+<pre><code>var RandomModel = Backbone.Model.extend({});
+var RandomModelView = Backbone.View.extend({
+	el : '#modelId',
+	render : function() {
+		this.$el.html(this.model.get("content"));
+		return this;
+	}
+});
+
+var myRandomModel = new RandomModel({ name : 'Dog' });
+var myRandomModelView = new RandomModelView({
+	el : '#overridingSelector',
+	model : mySomeModel
+});
+myRandomModelView.render();</code></pre>
+</section>
+
+<section class="slide">
+	<h2><span>DOM association</span></h2>
+	<p>For an existing DOM element:</p>
+	<ul>
+		<li>The <code>el</code> attribute defines a selector to match a DOM element</li>
+		<li><code>this.$el</code> contains a handy jQuery/Zepto reference to it</li>
+	</ul>
+	<pre><code>el: '#listContainer' // e.g. a &lt;ul id="listContainer"x&gt;
+render: function() {
+	this.$el.html('');
+	return this;
+}</code></pre>
+	<p>For new DOM elements:</p>
+	<ul>
+		<li>The <code>tagName</code> attribute contains the HTML tag to wrap the view in</li>
+		<li>The <code>className</code> attribute contains class name to add to the element</li>
+	</ul>
+	<pre><code>tagName: 'li',
+className: 'listItem'</code></pre>
+</section>
+
+<section class="slide">
+	<h2><span>DOM events</span></h2>
+	<p>A view can receive DOM events and trigger methods.</p>
+<pre><code>events: {
+	'click #addButton': 'addSomething',
+	'mouseover .menu': 'showMenu'
+},
+addSomething: function(e) {
+	// add something
+	// e contains the standard jQuery event object
+},
+showMenu: function(e) {
+	// show the menu
+	// e contains the standard jQuery event object
+}</pre></code>
+</section>
+
+<section class="slide">
+	<h2><span>Nested views</span></h2>
+	<p>In some circumstances, you want to nest your views.</p>
+	<p>A good example is a list of items, nested within a list container.</p>
+	<p>You can render your items from your main view, as follows:
+<pre><code>// ListItemView render method
+render: function() {
+	this.$el.html(this.model.get('title'));
+	return this;
+}
+
+// ListView render method
+render: function() {
+	this.collection.each(function(item) {
+		var item = new ListItemView({ model : item });
+		this.$el.append(item.render().el);
+	}, this);
+	return this;
+}
+
+// make new collection
+var myList = new List([
+	new ListItem({ content : "List item 1"}),
+	new ListItem({ content : "List item 2"}),
+]);
+var myListView = new ListView({ 
+	el : '#listContainer',
+	collection : c
+});
+myListView.render();
+</code></pre>
+</section>
+
+<section class="slide">
+	<h2><span>Auto-rendering</span></h2>
+	<p>Your views can update automatically when something changes on your model or collection</p>
+	<pre><code>initialize: function() {
+	this.model.on('change', function() {
+		this.render();
+	}, this);
+	return this;
+}</code></pre>
+	<p>Sometimes you only want to update part of your view:</p>
+	<pre><code>initialize: function() {
+	this.model.on('change', function() {
+		this.update();
+	}, this);
+},
+update: function() {
+	this.$el.find('.name').html(this.model.get('name'));
+}</code></pre>
+</section>
+
+<section class="slide">
+	<h2><span>Cleaning up</span></h2>
+	<p>If you're attaching DOM events (or using any timers) in your view, it's good practise to clean them up when your view is removed, to free up resource.</p>
+	<p>This is best accomplished by overriding the <code>remove</code> method:</p>
+	<pre><code>remove: function() {
+	// Add cleanup code here 
+	// example: unbind events!
+	this.model.unbind("change", this.update);
+
+	// always call default remove method in the end.
+	return Backbone.View.prototype.remove.apply(this, arguments);
+}</code></pre>
+</section>
+
+<section class="slide">
+	<h2><span>Slides and exercises</span></h2>
+	<ul>
+		<li>Download here:<br/>
+<pre><code>https://github.com/jamienewman/backbone-month/</code></pre>
+		</li>
+		<li><code>3Views</code> contains the script.js file you need to populate - run the <code>index.html</code> file in your browser.</li>
+		<li><code>slides/views</code> contains the slides. Just open the <code>index.html</code> file in your browser for a recap.</li>
+	</ul>
+</section>
+
+<!-- End slides. -->
+
+
+<!-- Begin extension snippets. Add or remove as needed. -->
+
+<!-- deck.navigation snippet -->
+<a href="#" class="deck-prev-link" title="Previous">&#8592;</a>
+<a href="#" class="deck-next-link" title="Next">&#8594;</a>
+
+<!-- deck.status snippet -->
+<p class="deck-status">
+	<span class="deck-status-current"></span>
+	/
+	<span class="deck-status-total"></span>
+</p>
+
+<!-- deck.goto snippet -->
+<form action="." method="get" class="goto-form">
+	<label for="goto-slide">Go to slide:</label>
+	<input type="text" name="slidenum" id="goto-slide" list="goto-datalist">
+	<datalist id="goto-datalist"></datalist>
+	<input type="submit" value="Go">
+</form>
+
+<!-- deck.hash snippet -->
+<a href="." title="Permalink to this slide" class="deck-permalink">#</a>
+
+<!-- End extension snippets. -->
+
+
+<!-- Required JS files. -->
+<script src="jquery-1.7.2.min.js"></script>
+<script src="core/deck.core.js"></script>
+
+<!-- Extension JS files. Add or remove as needed. -->
+<script src="core/deck.core.js"></script>
+<script src="extensions/hash/deck.hash.js"></script>
+<script src="extensions/menu/deck.menu.js"></script>
+<script src="extensions/goto/deck.goto.js"></script>
+<script src="extensions/status/deck.status.js"></script>
+<script src="extensions/navigation/deck.navigation.js"></script>
+<script src="extensions/scale/deck.scale.js"></script>
+
+<!-- Initialize the deck. You can put this in an external file if desired. -->
+<script>
+	$(function() {
+		$.deck('.slide');
+	});
+</script>
+</body>
+</html>
