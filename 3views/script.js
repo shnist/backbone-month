@@ -1,59 +1,27 @@
-// LESSON 1 CODE: Do not edit!
+// Views
 
-var Todo = Backbone.Model.extend({
-    defaults: {
-		completed: false,
-		priority: 0
-	},
-	initialize: function() {
- 
-		this.on('change', function() {
-			window.changed = true;
-		});
- 
-		this.on("change:priority", function() {
-			window.changedPriority = true;
-		});
-	},
-	complete: function() {
-		this.set('completed', true);
-	},
-	uncomplete: function() {
-		this.set('completed', false);
-	},
-	toggle: function() {
-		this.set('completed', !this.get('completed'));
-	},
-	setPriority: function(newPriority) {
-		this.set('priority', newPriority);
-	}
-});
+// 1. Create a new View called "TodoListView"
 
-var myFirstTodo = new Todo({
-	'description': "Buy Jamie and Nick a beer"
-});
+// 2. It should be an unordered list
 
-var mySecondTodo = new Todo({
-	'description': "Play with Backbone Models"
-});
- 
-mySecondTodo.complete();
+// 3. It should have an id of "todolist"
 
-// LESSON 2: COLLECTIONS
-// 1. Extend Backbone.Collection to create a new Collection called Todos
- 
-// 2. Define a sort function that automatically sorts the collection by completed state
+// 4. Create a new View called "TodoListItemView"
 
-// 3. Create an instance of Todos called myTodoList containing
-// 	  the models you created in Lesson 1 to this Collection
+// 6. It should be a list item
 
-// 5. Add a third Todo to this collection with a description of 'eat a cat'
+// 7. It should have a class of "item"
 
-// 6. Filter the collection to exclude completed Todos, and store the output in a new array called completedTodos
+// 8. Add a template to TodoListItemView with the following text '<p><%= description %> <input type="checkbox" name="checked" value="true"></p>'
 
-// 7. BONUS: Log the text "New todo" to the console whenever a todo is reset or models are added
-//           from the collection
+// 9. Define a render function which renders the template into the element
 
+// 10. Create a new instance of TodoListView called todoListView
 
-// 8. BONUS 2: Log the text "Completed total has changed" to the console whenever a the number
-//             of completed todos changes
+// 11. Pass in a collection attribute refering to myTodoList
+
+// 12. Prepend the todoListView element to the body
+
+// 13. Define a render method which loops over the collection, creates new TodoListItemView views for each model and appends to the todoListView element
+
+// 14. Render todoListView
