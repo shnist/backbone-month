@@ -126,7 +126,7 @@ var RandomModelView = Backbone.View.extend({
 var myRandomModel = new RandomModel({ name : 'Dog' });
 var myRandomModelView = new RandomModelView({
 	el : '#overridingSelector',
-	model : mySomeModel
+	model : myRandomModel
 });
 myRandomModelView.render();</code></pre>
 </section>
@@ -196,7 +196,7 @@ var myList = new List([
 ]);
 var myListView = new ListView({ 
 	el : '#listContainer',
-	collection : c
+	collection myList
 });
 myListView.render();
 </code></pre>
