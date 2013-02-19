@@ -53,10 +53,9 @@ mySecondTodo.complete();
 
 // LESSON 2: COLLECTIONS
 // 1. Extend Backbone.Collection to create a new Collection called Todos
-<<<<<<< HEAD
 // 2. Define a sort function that automatically sorts the collection by completed state
 // 3. Create an instance of Todos called myTodoList containing
-// 	  the models you created in Lesson 1 to this Collection
+//		the models you created in Lesson 1 to this Collection
 // 5. Add a third Todo to this collection with a description of 'eat a cat'
 // 6. Filter the collection to exclude completed Todos, and store the output in a new array called completedTodos
 // 7. BONUS: Log the text "New todo" to the console whenever a todo is reset or models are added
@@ -82,8 +81,9 @@ var myTodoList = new Todos([myFirstTodo, mySecondTodo, {'description': 'eat a ca
 var completedTodos = myTodoList.filter(Todos.comparator);
 
 myTodoList.on('add reset', function () {
-	console.log('New todo');
-=======
+	console.log('added');
+});
+
 var Todos = Backbone.Collection.extend({
     model: Todo
 });
@@ -100,7 +100,7 @@ var myTodoList = new Todos();
 myTodoList.add(myFirstTodo);
 myTodoList.add(mySecondTodo);
 
-// 5. Add a third Todo to this collection called 
+// 5. Add a third Todo to this collection called
 myTodoList.add(new Todo({description: "eat a cat"}));
 
 // 6. Filter the collection to exclude completed Todos, and store the output in a new array called completedTodos
@@ -111,5 +111,4 @@ var completedTodos = myTodoList.filter(function (todo) {
 // 7. BONUS: Log the text "Updated!" to the console whenever a todo is added, changed or removed from the collection
 myTodoList.on("add change remove", function() {
     console.log("Updated!");
->>>>>>> upstream/master
 });
