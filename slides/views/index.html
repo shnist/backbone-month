@@ -5,7 +5,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	<meta name="viewport" content="width=1024, user-scalable=no">
 
-	<title>Lesson 2: Collections</title>
+	<title>Lesson 3: Views</title>
 	
 	<!-- Required stylesheet -->
 	<link rel="stylesheet" href="core/deck.core.css">
@@ -39,14 +39,14 @@
 	<h2><span>Agenda</span></h2>
 	<ul>
 		<li>Introduction to views</h1>
-		<li>Traditional triggering</li>
-		<li>Creating a view</li>
-		<li>Breaking down a design</li>
-		<li>Relationship to Models and Collections</li>
-		<li>DOM association and events</li>
+		<li>Traditional updating</li>
+		<li>Updating with a view</li>
+		<li>Rendering a view</li>
+		<li>DOM association</li>
 		<li>DOM events</li>
-		<li>Templating</li>
-		<li>Rendering automatically</li>
+		<li>Nested views</li>
+		<li>Auto-rendering</li>
+		<li>Cleaning up</li>
 	</ul>
 </section>
 
@@ -55,6 +55,7 @@
 	<p>Views define how our models and collections are presented.</p>
 	<p>They consist of:</p>
 	<ul>
+		<li>Related to a single DOM element</li>
 		<li>Associated model/collection</li>
 		<li>DOM events</li>
 		<li>Render function</li>
@@ -63,19 +64,15 @@
 </section>
 
 <section class="slide">
-	<h2><span>Updating the DOM (1)</span></h2>
+	<h2><span>Traditional updating</span></h2>
 	<p>Doing something onclick:</p>
 	<pre><code>// bind to a click on the button
 $(&#39;#addButton&#39;).click(function(event) {
 
-	// clear user list by removing all its children.
-	$(&#39;#imageGallery&#39;).append($('<li/>'));
+	// add a new image container
+	$(&#39;#imageGallery&#39;).append($('&lt;li/&gt;'));
 
 });</code></pre>
-</section>
-
-<section class="slide">
-	<h2><span>Updating the DOM (2)</span></h2>
 	<p>Update page on Ajax success:</p>
 	<pre><code>$.ajax({
 	url: 'viewImage.php?size=large'
@@ -85,76 +82,158 @@ $(&#39;#addButton&#39;).click(function(event) {
 </section>
 
 <section class="slide">
-	<h2><span>Using a view</span></h2>
-	<pre><code>var ListItemView = Backbone.View.extend({
- 	collection: ImageGallery,
+	<h2><span>Updating with a view</span></h2>
+	<pre><code>var ImageGalleryView = Backbone.View.extend({
+	el: '#imageGallery',
 	events: {
 		'click #addButton': 'addImage',
-		'click #showImage': 'showImage'
-	},
+		'click .showLargeImage': 'showImage'
+	}
 	addImage: function(e) {
 		// add to collection here
 		// this.collection.add({someKey: 'someValue'});
 	},
 	showImage: function(e) {
 		// get data here
-		// this.collection.add({someKey: 'someValue'});
+		// this.collection.get($(e.target).data('image-id'));
+	},
+	render: function() {
+		// manipulate the DOM here
+		// $(this.el).html(this.collection.serialize)
+		return this;
 	}
+});
+
+var myImageGalleryView = new ImageGalleryView({
+	collection: myImageGallery // an existing collection
 });</code></pre>
 </section>
 
 <section class="slide">
-	<h2><span>Breaking down a design</span></h2>
-	<p>[TODO : Image of design]
+	<h2><span>Rendering a view</span></h2>
+	<p>The <code>render</code> method should do all of your DOM manipulation to render the view.</p>
+	<p>It should always <code>return this;</code>.</p>
+	<p>For example:</p>
+<pre><code>var RandomModel = Backbone.Model.extend({});
+var RandomModelView = Backbone.View.extend({
+	el : '#modelId',
+	render : function() {
+		this.$el.html(this.model.get("content"));
+		return this;
+	}
+});
+
+var myRandomModel = new RandomModel({ name : 'Dog' });
+var myRandomModelView = new RandomModelView({
+	el : '#overridingSelector',
+	model : mySomeModel
+});
+myRandomModelView.render();</code></pre>
 </section>
 
-
-
 <section class="slide">
-	<h2><span>Sorting</span></h2>
-	<p>Automatic sorting accomplished through comparator function.</p>
-	<p>The simplest way is to sort by attribue:</p>
-<pre><code>List.comparator: function(model) {
-    return model.id;
+	<h2><span>DOM association</span></h2>
+	<p>For an existing DOM element:</p>
+	<ul>
+		<li>The <code>el</code> attribute defines a selector to match a DOM element</li>
+		<li><code>this.$el</code> contains a handy jQuery/Zepto reference to it</li>
+	</ul>
+	<pre><code>el: '#listContainer' // e.g. a &lt;ul id="listContainer"x&gt;
+render: function() {
+	this.$el.html('');
+	return this;
 }</code></pre>
-	<p>You can also define JS array-style sort functions (return 0, 1, -1)</p>
+	<p>For new DOM elements:</p>
+	<ul>
+		<li>The <code>tagName</code> attribute contains the HTML tag to wrap the view in</li>
+		<li>The <code>className</code> attribute contains class name to add to the element</li>
+	</ul>
+	<pre><code>tagName: 'li',
+className: 'listItem'</code></pre>
 </section>
 
 <section class="slide">
-	<h2><span>Filtering</span></h2>
-	<p>A function which returns a set of models matching the conditions:</p>
-<pre><code>var filteredList = myList.filter(function(model) {
-  return model.get("title") === "Drink wine";
-});</code></pre>
+	<h2><span>DOM events</span></h2>
+	<p>A view can receive DOM events and trigger methods.</p>
+<pre><code>events: {
+	'click #addButton': 'addSomething',
+	'mouseover .menu': 'showMenu'
+},
+addSomething: function(e) {
+	// add something
+	// e contains the standard jQuery event object
+},
+showMenu: function(e) {
+	// show the menu
+	// e contains the standard jQuery event object
+}</pre></code>
 </section>
 
 <section class="slide">
-	<h2><span>Events</span></h2>
-	<p>A collection has <code>reset</code>, <code>add</code> and <code>remove</code>.</p>
-<pre><code>List.on("reset", function() {
-	// Fired when the collection is filled/sorted
-});
+	<h2><span>Nested views</span></h2>
+	<p>In some circumstances, you want to nest your views.</p>
+	<p>A good example is a list of items, nested within a list container.</p>
+	<p>You can render your items from your main view, as follows:
+<pre><code>// ListItemView render method
+render: function() {
+	this.$el.html(this.model.get('title'));
+	return this;
+}
 
-List.on("add remove", function() {
-	// Fired when models are added or removed
-});
+// ListView render method
+render: function() {
+	this.collection.each(function(item) {
+		var item = new ListItemView({ model : item });
+		this.$el.append(item.render().el);
+	}, this);
+	return this;
+}
 
-List.on("add reset remove", function() {
-	// Fired on all
-});</pre></code>
+// make new collection
+var myList = new List([
+	new ListItem({ content : "List item 1"}),
+	new ListItem({ content : "List item 2"}),
+]);
+var myListView = new ListView({ 
+	el : '#listContainer',
+	collection : c
+});
+myListView.render();
+</code></pre>
 </section>
 
 <section class="slide">
-	<h2><span>Event bubbling</span></h2>
-	<p>A collection receives events of models it contains too.</p>
-	<p>e.g. listen for any of your models changing:</p>
-	<pre><code>List.on("change", function() {
-	// Fired on any model change
-});
+	<h2><span>Auto-rendering</span></h2>
+	<p>Your views can update automatically when something changes on your model or collection</p>
+	<pre><code>initialize: function() {
+	this.model.on('change', function() {
+		this.render();
+	}, this);
+	return this;
+}</code></pre>
+	<p>Sometimes you only want to update part of your view:</p>
+	<pre><code>initialize: function() {
+	this.model.on('change', function() {
+		this.update();
+	}, this);
+},
+update: function() {
+	this.$el.find('.name').html(this.model.get('name'));
+}</code></pre>
+</section>
 
-List.on("change:id", function() {
-	// Fired on any model 'id' attribute change
-});</pre></code>
+<section class="slide">
+	<h2><span>Cleaning up</span></h2>
+	<p>If you're attaching DOM events (or using any timers) in your view, it's good practise to clean them up when your view is removed, to free up resource.</p>
+	<p>This is best accomplished by overriding the <code>remove</code> method:</p>
+	<pre><code>remove: function() {
+	// Add cleanup code here 
+	// example: unbind events!
+	this.model.unbind("change", this.update);
+
+	// always call default remove method in the end.
+	return Backbone.View.prototype.remove.apply(this, arguments);
+}</code></pre>
 </section>
 
 <section class="slide">
@@ -163,8 +242,8 @@ List.on("change:id", function() {
 		<li>Download here:<br/>
 <pre><code>https://github.com/jamienewman/backbone-month/</code></pre>
 		</li>
-		<li><code>2Collections</code> contains the script.js file you need to populate - run the <code>index.html</code> file in your browser.</li>
-		<li><code>slides/collections</code> contains the slides. Just open the <code>index.html</code> file in your browser for a recap.</li>
+		<li><code>3Views</code> contains the script.js file you need to populate - run the <code>index.html</code> file in your browser.</li>
+		<li><code>slides/views</code> contains the slides. Just open the <code>index.html</code> file in your browser for a recap.</li>
 	</ul>
 </section>
 
