@@ -41,9 +41,9 @@
 		<li>Introduction to routers</h1>
 		<li>Creating a router</li>
 		<li>Defining routes</li>
-		<li>History management</li>
 		<li>Params and splats</li>
 		<li>Manually triggering</li>
+		<li>History management</li>
 		<li>Events</li>
 		<li>Bookmarking and server state</li>
 	</ul>
@@ -59,7 +59,7 @@
 		<li>History management</li>
 		<li>Events</li>
 	</ul>
-	<p>You would typically create a view to reflect a change in your UI.</p>
+	<p>Routers handle a users request, based on a url, and trigger certain actions within your application.</p>
 </section>
 
 <section class="slide">
@@ -74,54 +74,127 @@
 
 <section class="slide">
 	<h2><span>Defining routes</span></h2>
-	<p>Overriding the root URL:</p>
-	
-	<pre><code>var ImageGalleryView = Backbone.View.extend({
-	el: '#imageGallery',
-	events: {
-		'click #addButton': 'addImage',
-		'click .showLargeImage': 'showImage'
-	}
-	addImage: function(e) {
-		// add to collection here
-		// this.collection.add({someKey: 'someValue'});
+	<p>Create a route map</p>
+	<pre><code>var Router = Backbone.Router.extend({
+	routes: {
+		"": "index"
 	},
-	showImage: function(e) {
-		// get data here
-		// this.collection.get($(e.target).data('image-id'));
-	},
-	render: function() {
-		// manipulate the DOM here
-		// $(this.el).html(this.collection.serialize)
-		return this;
-	}
-});
 
-var myImageGalleryView = new ImageGalleryView({
-	collection: myImageGallery // an existing collection
+	index: function() {
+		// do something when index route is triggered
+	}
+});</code></pre>
+	<!-- <p>Overriding the root URL:</p>
+	
+	<pre><code>{ root: "/animals" }</code></pre> -->
+</section>
+
+<section class="slide">
+	<h2><span>Defining routes</span></h2>
+	<p>The route cascade</p>
+	<pre><code>var Router = Backbone.Router.extend({
+	routes: {
+		"about": "about",
+		"": "index"
+	},
+
+	about: function() {
+		// do something when "/about" route is triggered
+	},
+
+	index: function() {
+		// do something when index route is triggered
+	}
 });</code></pre>
 </section>
 
 <section class="slide">
-	<h2><span>Rendering a view</span></h2>
-	<p>The <code>render</code> method should do all of your DOM manipulation to render the view.</p>
-	<p>It should always <code>return this;</code>.</p>
-	<p>For example:</p>
-<pre><code>var RandomModel = Backbone.Model.extend({});
-var RandomModelView = Backbone.View.extend({
-	el : '#modelId',
-	render : function() {
-		this.$el.html(this.model.get("content"));
-		return this;
-	}
-});
+	<h2><span>Defining routes</span></h2>
+	<p>Urls can be as specific as you need</p>
+	<pre><code>var Router = Backbone.Router.extend({
+	routes: {
+		"about/contact": "contact",
+		"about": "about",
+		"": "index"
+	},
 
-var myRandomModel = new RandomModel({ name : 'Dog' });
-var myRandomModelView = new RandomModelView({
-	el : '#overridingSelector',
-	model : myRandomModel
-});
-myRandomModelView.render();</code></pre>
+	contact: function() {
+		// do something when "/about/contact" route is triggered
+	},
+
+	about: function() {
+		// do something when "/about" route is triggered
+	},
+
+	...
+	
+});</code></pre>
+</section>
+
+<section class="slide">
+	<h2><span>Params</span></h2>
+	<p>Params pick out individual url segments</p>
+	<pre><code>var Router = Backbone.Router.extend({
+	routes: {
+		"customers/:id": "customers",
+		"about": "about",
+		":page": "page",
+		"": "index"
+	},
+
+	customers: function(id) {
+		// id is "jones" after "/customers/jones" is triggered
+	},
+
+	page: function(page) {
+		// route to the given top level page
+	},
+
+	...
+
+});</code></pre>
+</section>
+
+<section class="slide">
+	<h2><span>Splats</span></h2>
+	<p>Splats give you the rest of the url to parse manually</p>
+	<pre><code>var Router = Backbone.Router.extend({
+	routes: {
+		"search/*query": "search",
+		"customers/:id": "customers",
+		"about": "about",
+		":page": "page",
+		"": "index"
+	},
+
+	search: function(query) {
+		// query is a string containing rest of url
+		// e.g. "search/?term=volksvagen&type=hatchback"
+		//      query === "?term=volksvagen&type=hatchback"
+	},
+
+	...
+
+});</code></pre>
+</section>
+
+<section class="slide">
+	<h2><span>Manually triggering</span></h2>
+	<p>You can programmatically trigger a route</p>
+	<ul>
+		<li>First param defines the new url</li>
+		<li>Second param states whether the route callback should be fired; defaults to false</li>
+	</ul>
+	<pre><code>router.navigate("some/route", true);</code></pre>
+	<p>Cleaner way of doing <code>window.location.href</code></p>
+</section>
+
+<section class="slide">
+	<h2><span>History management</span></h2>
+	<p>To use history management within your app you need to initialise your router</p>
+	<pre><code>Backbone.history.start();</code></pre>
+	<p>To initialise using the HTML5 push state api - recommended</p>
+	<pre><code>Backbone.history.start({ pushState: true });</code></pre>
 </section>
 
 <section class="slide">
