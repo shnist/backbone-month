@@ -1,3 +1,33 @@
+var Todo = Backbone.Model.extend({
+	defaults: {
+		completed: false,
+		priority: 0
+	},
+	initialize: function() {
+
+		this.on('change', function() {
+			window.changed = true;
+		});
+
+		this.on("change:priority", function() {
+			window.changedPriority = true;
+		});
+	},
+	complete: function() {
+		this.set('completed', true);
+	},
+	uncomplete: function() {
+		this.set('completed', false);
+	},
+	toggle: function() {
+		this.set('completed', !this.get('completed'));
+	},
+	setPriority: function(newPriority) {
+		this.set('priority', newPriority);
+	}
+});
+
+
 // LESSON 1: MODELS
 
 // 1. Extend Backbone.Model to create a new Model called Todo
@@ -10,9 +40,19 @@
 
 // 5. Create an instance of Todo named 'myFirstTodo' with a description attribute of "Buy Jamie and Nick a beer"
 
+var myFirstTodo = new Todo({
+	'description': "Buy Jamie and Nick a beer"
+});
+
 // 6. Create a new instance of Todo named 'mySecondTodo' with a description of "Play with Backbone Models"
 
+var mySecondTodo = new Todo({
+	'description': "Play with Backbone Models"
+});
+
 // 7. Set mySecondTodo completed state to true
+
+mySecondTodo.complete();
 
 
 // BONUS
