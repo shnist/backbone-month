@@ -35,6 +35,9 @@ var Router = Backbone.Router.extend({
 //    - passing the correct model from the this.myTodoList in using the id param
 //	  - render into the DOM element with id #container
 
-// BONUS: Create a splat which takes a search term from an HTML input field and searches the collection
-//		  for models with that particular word in their description and render them in out in a new list
-//		  view
+// BONUS: Create a splat which:
+//		  - takes a search term from an HTML input field
+//		  - calls a search function when a button is pressed
+//		  - searches the myTodoList collection for models with the search term in their description
+//		  - render out the matching models to a new view, with a back button
+//		  - show a "not found" message if no model descriptions match that term
