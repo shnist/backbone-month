@@ -43,8 +43,8 @@
 		<li>Defining routes</li>
 		<li>Params and splats</li>
 		<li>Manually triggering</li>
-		<li>History management</li>
 		<li>Events</li>
+		<li>History management</li>
 		<li>Bookmarking and server state</li>
 	</ul>
 </section>
@@ -187,119 +187,41 @@
 	</ul>
 	<pre><code>router.navigate("some/route", true);</code></pre>
 	<p>Cleaner way of doing <code>window.location.href</code></p>
+	<p>Also allows you to hook into router events</p>
+</section>
+
+<section class="slide">
+	<h2><span>Events</span></h2>
+	<p>Routers emit a single event, route. This is useful to tell if a route has been triggered.</p>
+	<p>You can match any route using ...</p>
+	<pre><code>router.on("route", function(name) {
+
+});</code></pre>
+	<p>... or a specific route ...</p>
+	<pre><code>route.on("route:myroute", function(name) {
+
+});</code></pre>
 </section>
 
 <section class="slide">
 	<h2><span>History management</span></h2>
-	<p>To use history management within your app you need to initialise your router</p>
+	<p>History management permits the use of the back and forward button and the bookmarking of pages/actions within your app. Backbone uses two techniques for this.</p>
 	<pre><code>Backbone.history.start();</code></pre>
-	<p>To initialise using the HTML5 push state api - recommended</p>
+	<p>Backbone by default uses the #hash fragments method for single page app routing</p>
+	<p>This means <code>http://www.myapp.com/#some/route</code> maps to the route <code>/some/route</code>.</p>
+</section>
+
+<section class="slide">
+	<h2><span>History management</span></h2>
+	<p>The second method is the HTML5 pushState api - recommended</p>
 	<pre><code>Backbone.history.start({ pushState: true });</code></pre>
+	<p>Now we don't need the hash so ...</p>
+	<p><code>http://www.myapp.com/some/route</code> maps to <code>/some/route</code>.</p>
+	<p>When using pushState, browsers that don't support it will fallback to the #hash fragment method.</p>
 </section>
 
 <section class="slide">
-	<h2><span>DOM association</span></h2>
-	<p>For an existing DOM element:</p>
-	<ul>
-		<li>The <code>el</code> attribute defines a selector to match a DOM element</li>
-		<li><code>this.$el</code> contains a handy jQuery/Zepto reference to it</li>
-	</ul>
-	<pre><code>el: '#listContainer' // e.g. a &lt;ul id="listContainer"x&gt;
-render: function() {
-	this.$el.html('');
-	return this;
-}</code></pre>
-	<p>For new DOM elements:</p>
-	<ul>
-		<li>The <code>tagName</code> attribute contains the HTML tag to wrap the view in</li>
-		<li>The <code>className</code> attribute contains class name to add to the element</li>
-	</ul>
-	<pre><code>tagName: 'li',
-className: 'listItem'</code></pre>
-</section>
-
-<section class="slide">
-	<h2><span>DOM events</span></h2>
-	<p>A view can receive DOM events and trigger methods.</p>
-<pre><code>events: {
-	'click #addButton': 'addSomething',
-	'mouseover .menu': 'showMenu'
-},
-addSomething: function(e) {
-	// add something
-	// e contains the standard jQuery event object
-},
-showMenu: function(e) {
-	// show the menu
-	// e contains the standard jQuery event object
-}</pre></code>
-</section>
-
-<section class="slide">
-	<h2><span>Nested views</span></h2>
-	<p>In some circumstances, you want to nest your views.</p>
-	<p>A good example is a list of items, nested within a list container.</p>
-	<p>You can render your items from your main view, as follows:
-<pre><code>// ListItemView render method
-render: function() {
-	this.$el.html(this.model.get('title'));
-	return this;
-}
-
-// ListView render method
-render: function() {
-	this.collection.each(function(item) {
-		var item = new ListItemView({ model : item });
-		this.$el.append(item.render().el);
-	}, this);
-	return this;
-}
-
-// make new collection
-var myList = new List([
-	new ListItem({ content : "List item 1"}),
-	new ListItem({ content : "List item 2"}),
-]);
-var myListView = new ListView({ 
-	el : '#listContainer',
-	collection myList
-});
-myListView.render();
-</code></pre>
-</section>
-
-<section class="slide">
-	<h2><span>Auto-rendering</span></h2>
-	<p>Your views can update automatically when something changes on your model or collection</p>
-	<pre><code>initialize: function() {
-	this.model.on('change', function() {
-		this.render();
-	}, this);
-	return this;
-}</code></pre>
-	<p>Sometimes you only want to update part of your view:</p>
-	<pre><code>initialize: function() {
-	this.model.on('change', function() {
-		this.update();
-	}, this);
-},
-update: function() {
-	this.$el.find('.name').html(this.model.get('name'));
-}</code></pre>
-</section>
-
-<section class="slide">
-	<h2><span>Cleaning up</span></h2>
-	<p>If you're attaching DOM events (or using any timers) in your view, it's good practise to clean them up when your view is removed, to free up resource.</p>
-	<p>This is best accomplished by overriding the <code>remove</code> method:</p>
-	<pre><code>remove: function() {
-	// Add cleanup code here 
-	// example: unbind events!
-	this.model.unbind("change", this.update);
-
-	// always call default remove method in the end.
-	return Backbone.View.prototype.remove.apply(this, arguments);
-}</code></pre>
+	<h2><span>Bookmarking</span></h2>
 </section>
 
 <section class="slide">
@@ -308,7 +230,7 @@ update: function() {
 		<li>Download here:<br/>
 <pre><code>https://github.com/jamienewman/backbone-month/</code></pre>
 		</li>
-		<li><code>3Views</code> contains the script.js file you need to populate - run the <code>index.html</code> file in your browser.</li>
+		<li><code>4Routers</code> contains the script.js file you need to populate - run the <code>index.html</code> file in your browser.</li>
 		<li><code>slides/views</code> contains the slides. Just open the <code>index.html</code> file in your browser for a recap.</li>
 	</ul>
 </section>
