@@ -37,6 +37,7 @@ var todoListView = new TodoListView({
 });
 
 
+
 // 11. Pass in a collection attribute refering to myTodoList
 
 // 12. Prepend the todoListView element to the body
@@ -44,3 +45,5 @@ var todoListView = new TodoListView({
 // 13. Define a render method which loops over the collection, creates new TodoListItemView views for each model and appends to the todoListView element
 
 // 14. Render todoListView
+
+$("body").prepend(todoListView.render().el);

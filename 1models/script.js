@@ -6,7 +6,14 @@
 // 4. Add a custom method 'uncomplete' which sets the completed attribute to false
 // 5. Create an instance of Todo named 'myFirstTodo' with a description attribute of "Buy Jamie and Nick a beer"
 // 6. Create a new instance of Todo named 'mySecondTodo' with a description of "Play with Backbone Models"
+
+
+// 6. Create a new instance of Todo named 'mySecondTodo' with a description of "Play with Backbone Models"
+
+
+
 // 7. Set mySecondTodo completed state to true
+
 
 
 // BONUS

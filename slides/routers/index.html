@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=1024, user-scalable=no">
+
+	<title>Lesson 4: Routers</title>
+	
+	<!-- Required stylesheet -->
+	<link rel="stylesheet" href="core/deck.core.css">
+	
+	<!-- Extension CSS files go here. Remove or add as needed. -->
+	<link rel="stylesheet" href="extensions/goto/deck.goto.css">
+	<link rel="stylesheet" href="extensions/menu/deck.menu.css">
+	<link rel="stylesheet" href="extensions/navigation/deck.navigation.css">
+	<link rel="stylesheet" href="extensions/status/deck.status.css">
+	<link rel="stylesheet" href="extensions/hash/deck.hash.css">
+	<link rel="stylesheet" href="extensions/scale/deck.scale.css">
+
+	<!-- Style theme. More available in /themes/style/ or create your own. -->
+	<link rel="stylesheet" href="themes/style/web-2.0.css">
+	
+	<!-- Transition theme. More available in /themes/transition/ or create your own. -->
+	<link rel="stylesheet" href="themes/transition/horizontal-slide.css">
+
+	<!-- Required Modernizr file -->
+	<script src="modernizr.custom.js"></script>
+</head>
+<body class="deck-container">
+
+<!-- Begin slides. Just make elements with a class of slide. -->
+
+<section class="slide">
+	<h1><span>Routers</span></h1>
+</section>
+
+<section class="slide">
+	<h2><span>Agenda</span></h2>
+	<ul>
+		<li>Introduction to routers</h1>
+		<li>Creating a router</li>
+		<li>Defining routes</li>
+		<li>Params and splats</li>
+		<li>Manually triggering</li>
+		<li>Events</li>
+		<li>History management</li>
+		<li>Bookmarking and server state</li>
+	</ul>
+</section>
+
+<section class="slide">
+	<h2><span>Introduction to routers</span></h2>
+	<p>Routers map URLs to views.</p>
+	<p>They consist of:</p>
+	<ul>
+		<li>A set of URLs to map</li>
+		<li>Methods to trigger when URLs are hit</li>
+		<li>History management</li>
+		<li>Events</li>
+	</ul>
+	<p>Routers handle a users request, based on a url, and trigger certain actions within your application.</p>
+</section>
+
+<section class="slide">
+	<h2><span>Creating a router</span></h2>
+	<pre><code>var Router = Backbone.Router.extend({
+
+});</code></pre>
+	<p>Creating an instance:</p>
+	<pre><code>var router = new Router();</code></pre>
+</section>
+
+
+<section class="slide">
+	<h2><span>Defining routes</span></h2>
+	<p>Create a route map</p>
+	<pre><code>var Router = Backbone.Router.extend({
+	routes: {
+		"": "index"
+	},
+
+	index: function() {
+		// do something when index route is triggered
+	}
+});</code></pre>
+	<!-- <p>Overriding the root URL:</p>
+	
+	<pre><code>{ root: "/animals" }</code></pre> -->
+</section>
+
+<section class="slide">
+	<h2><span>Defining routes</span></h2>
+	<p>The route cascade</p>
+	<pre><code>var Router = Backbone.Router.extend({
+	routes: {
+		"about": "about",
+		"": "index"
+	},
+
+	about: function() {
+		// do something when "/about" route is triggered
+	},
+
+	index: function() {
+		// do something when index route is triggered
+	}
+});</code></pre>
+</section>
+
+<section class="slide">
+	<h2><span>Defining routes</span></h2>
+	<p>Urls can be as specific as you need</p>
+	<pre><code>var Router = Backbone.Router.extend({
+	routes: {
+		"about/contact": "contact",
+		"about": "about",
+		"": "index"
+	},
+
+	contact: function() {
+		// do something when "/about/contact" route is triggered
+	},
+
+	about: function() {
+		// do something when "/about" route is triggered
+	},
+
+	...
+	
+});</code></pre>
+</section>
+
+<section class="slide">
+	<h2><span>Params</span></h2>
+	<p>Params pick out individual url segments</p>
+	<pre><code>var Router = Backbone.Router.extend({
+	routes: {
+		"customers/:id": "customers",
+		"about": "about",
+		":page": "page",
+		"": "index"
+	},
+
+	customers: function(id) {
+		// id is "jones" after "/customers/jones" is triggered
+	},
+
+	page: function(page) {
+		// route to the given top level page
+	},
+
+	...
+
+});</code></pre>
+</section>
+
+<section class="slide">
+	<h2><span>Splats</span></h2>
+	<p>Splats give you the rest of the url to parse manually</p>
+	<pre><code>var Router = Backbone.Router.extend({
+	routes: {
+		"search/*query": "search",
+		"customers/:id": "customers",
+		"about": "about",
+		":page": "page",
+		"": "index"
+	},
+
+	search: function(query) {
+		// query is a string containing rest of url
+		// e.g. "search/?term=volksvagen&type=hatchback"
+		//      query === "?term=volksvagen&type=hatchback"
+	},
+
+	...
+
+});</code></pre>
+</section>
+
+<section class="slide">
+	<h2><span>Manually triggering</span></h2>
+	<p>You can programmatically trigger a route</p>
+	<ul>
+		<li>First param defines the new url</li>
+		<li>Second param states whether the route callback should be fired; defaults to false</li>
+	</ul>
+	<pre><code>router.navigate("some/route", true);</code></pre>
+	<p>Cleaner way of doing <code>window.location.href</code></p>
+	<p>Also allows you to hook into router events</p>
+</section>
+
+<section class="slide">
+	<h2><span>Events</span></h2>
+	<p>Routers emit a single event, route. This is useful to tell if a route has been triggered.</p>
+	<p>You can match any route using ...</p>
+	<pre><code>router.on("route", function(name) {
+
+});</code></pre>
+	<p>... or a specific route ...</p>
+	<pre><code>route.on("route:myroute", function(name) {
+
+});</code></pre>
+</section>
+
+<section class="slide">
+	<h2><span>History management</span></h2>
+	<p>History management permits the use of the back and forward button and the bookmarking of pages/actions within your app. Backbone uses two techniques for this.</p>
+	<pre><code>Backbone.history.start();</code></pre>
+	<p>Backbone by default uses the #hash fragments method for single page app routing</p>
+	<p>This means <code>http://www.myapp.com/#some/route</code> maps to the route <code>/some/route</code>.</p>
+</section>
+
+<section class="slide">
+	<h2><span>History management</span></h2>
+	<p>The second method is the HTML5 pushState api - recommended</p>
+	<pre><code>Backbone.history.start({ pushState: true });</code></pre>
+	<p>Now we don't need the hash so ...</p>
+	<p><code>http://www.myapp.com/some/route</code> maps to <code>/some/route</code>.</p>
+	<p>When using pushState, browsers that don't support it will fallback to the #hash fragment method.</p>
+</section>
+
+<section class="slide">
+	<h2><span>Slides and exercises</span></h2>
+	<h3>Slides</h3>
+	<ul>
+		<li><code>slides/routers</code> contains the slides. Just open the <code>index.html</code> file in your browser for a recap.</li>
+	</ul>
+	<h3>Exercises</h3>
+	<ul>
+		<li>Download here:<br/>
+<pre><code>https://github.com/jamienewman/backbone-month/</code></pre>
+		</li>
+		<li>Ensure <code>node</code> is installed</li>
+		<li><code>cd</code> into 4routers</li>
+		<li>Run <code>npm install -d</code></li>
+		<li>Run <code>node server.js</code></li>
+		<li>Open <code>http://localhost:8080/</code></li>
+		<li>Edit <code>router.js</code></li>
+	</ul>
+</section>
+
+<!-- End slides. -->
+
+
+<!-- Begin extension snippets. Add or remove as needed. -->
+
+<!-- deck.navigation snippet -->
+<a href="#" class="deck-prev-link" title="Previous">&#8592;</a>
+<a href="#" class="deck-next-link" title="Next">&#8594;</a>
+
+<!-- deck.status snippet -->
+<p class="deck-status">
+	<span class="deck-status-current"></span>
+	/
+	<span class="deck-status-total"></span>
+</p>
+
+<!-- deck.goto snippet -->
+<form action="." method="get" class="goto-form">
+	<label for="goto-slide">Go to slide:</label>
+	<input type="text" name="slidenum" id="goto-slide" list="goto-datalist">
+	<datalist id="goto-datalist"></datalist>
+	<input type="submit" value="Go">
+</form>
+
+<!-- deck.hash snippet -->
+<a href="." title="Permalink to this slide" class="deck-permalink">#</a>
+
+<!-- End extension snippets. -->
+
+
+<!-- Required JS files. -->
+<script src="jquery-1.7.2.min.js"></script>
+<script src="core/deck.core.js"></script>
+
+<!-- Extension JS files. Add or remove as needed. -->
+<script src="core/deck.core.js"></script>
+<script src="extensions/hash/deck.hash.js"></script>
+<script src="extensions/menu/deck.menu.js"></script>
+<script src="extensions/goto/deck.goto.js"></script>
+<script src="extensions/status/deck.status.js"></script>
+<script src="extensions/navigation/deck.navigation.js"></script>
+<script src="extensions/scale/deck.scale.js"></script>
+
+<!-- Initialize the deck. You can put this in an external file if desired. -->
+<script>
+	$(function() {
+		$.deck('.slide');
+	});
+</script>
+</body>
+</html>
