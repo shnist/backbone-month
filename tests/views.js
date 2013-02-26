@@ -3,15 +3,15 @@ describe("Views:", function() {
 	describe("TodoListView", function() {
 
 		it("exists", function() {
-			expect(TodoListView).toBeDefined();
+			expect(TodoListItemView).toBeDefined();
 		});
 
 		it("is a function", function() {
-			expect(typeof TodoListView).toBe("function");
+			expect(typeof TodoListItemView).toBe("function");
 		});
 
 		it("extends off Backbone's View", function() {
-			var temp = new TodoListView();
+			var temp = new TodoListItemView();
 			expect(temp.cid).toBeDefined();
 			expect(temp.el).toBeDefined();
 			expect(temp.options).toBeDefined();
